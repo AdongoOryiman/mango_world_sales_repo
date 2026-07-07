@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Waiters Daily Sales Remittance (Treasury)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --color-black: #000000;
+        --color-white: #ffffff;
+        --color-beige-bg: #FAF9F5;       /* Warm elegant light beige */
+        --color-beige-card: #ffffff;     /* White cards for crisp text/borders */
+        --color-beige-accent: #F5F5DC;   /* Soft beige highlighting for totals */
+        --color-gray-border: #DCDCD0;    /* Muted border grey-beige */
+        --color-focus: #000000;
+        --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: var(--color-beige-bg);
+        color: var(--color-black);
+        font-family: var(--font-sans);
+        padding: 2rem 1.5rem;
+        min-height: 100vh;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* Brand Header */
+      header {
+        margin-bottom: 2.5rem;
+        border-bottom: 3px solid var(--color-black);
+        padding-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+      }
+
+      .brand-title-area h1 {
+        font-size: 2.25rem;
+        font-weight: 900;
+        letter-spacing: -0.05em;
+        text-transform: uppercase;
+        line-height: 1.0;
+        margin-bottom: 0.25rem;
+      }
+
+      .brand-title-area p {
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #555555;
+      }
+
+      .system-badge {
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        background-color: var(--color-black);
+        color: var(--color-white);
+        padding: 0.35rem 0.75rem;
+        border-radius: 0;
+      }
+
+      /* Metadata Grid (Supervisor info) */
+      .metadata-section {
+        background-color: var(--color-white);
+        border: 2px solid var(--color-black);
+        padding: 1.75rem;
+        margin-bottom: 2.5rem;
+        box-shadow: 6px 6px 0px rgba(0, 0, 0, 1);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .form-group label {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .required-star {
+        color: #D32F2F;
+        margin-left: 0.15rem;
+      }
+
+      /* Sharp high-contrast Form Controls */
+      input, select {
+        font-family: var(--font-sans);
+        font-size: 0.9rem;
+        font-weight: 500;
+        padding: 0.75rem;
+        border: 1.5px solid var(--color-black);
+        background-color: var(--color-white);
+        color: var(--color-black);
+        outline: none;
+        border-radius: 0; /* Strict Sharp Border */
+        transition: all 0.1s ease-in-out;
+      }
+
+      input::placeholder {
+        color: #A0A090;
+        font-weight: 400;
+      }
+
+      input:focus, select:focus {
+        border-width: 2.5px;
+        box-shadow: 3px 3px 0px var(--color-black);
+        background-color: #FFFFF8;
+      }
+
+      /* Specific style for readonly totals */
+      input[readonly] {
+        background-color: #F0EFEA;
+        border-color: var(--color-gray-border);
+        font-weight: 700;
+        cursor: not-allowed;
+      }
+
+      input[readonly]:focus {
+        border-width: 1.5px;
+        box-shadow: none;
+        background-color: #F0EFEA;
+      }
+
+      /* Table Styles for Desktop & Tablet */
+      .grid-container {
+        overflow-x: auto;
+        margin-bottom: 2.5rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: var(--color-white);
+        border: 2px solid var(--color-black);
+        box-shadow: 8px 8px 0px rgba(0,0,0,1);
+      }
+
+      th {
+        background-color: var(--color-black);
+        color: var(--color-white);
+        text-align: left;
+        font-size: 0.725rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 1rem 0.75rem;
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      th:last-child {
+        border-right: none;
+      }
+
+      td {
+        padding: 0.5rem;
+        border-bottom: 1.5px solid var(--color-gray-border);
+        border-right: 1.5px solid var(--color-gray-border);
+      }
+
+      td:last-child {
+        border-right: none;
+      }
+
+      .grid-row:hover td {
+        background-color: #FAF8F2; /* Soft beige hover */
+      }
+
+      /* Column Constraints */
+      th.col-sn, td.col-sn {
+        width: 45px;
+        text-align: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+        background-color: #FAF9F5;
+      }
+
+      th.col-name, td.col-name {
+        min-width: 200px;
+      }
+
+      th.col-num, td.col-num {
+        width: 140px;
+      }
+
+      th.col-term, td.col-term {
+        width: 160px;
+      }
+
+      /* Align cell values correctly */
+      input[type="number"] {
+        text-align: right;
+        -moz-appearance: textfield;
+      }
+
+      input[type="number"]::-webkit-outer-spin-button,
+      input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      .cell-input {
+        width: 100%;
+        border: 1px solid var(--color-black);
+        padding: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .cell-input:focus {
+        border-width: 2px;
+        box-shadow: 1.5px 1.5px 0px var(--color-black);
+      }
+
+      /* Total Row Styles */
+      tfoot tr {
+        background-color: var(--color-beige-accent);
+        font-weight: 800;
+      }
+
+      tfoot td {
+        border-top: 3px solid var(--color-black);
+        border-bottom: 2px solid var(--color-black);
+        padding: 0.9rem 0.75rem;
+        font-size: 0.9rem;
+        text-align: right;
+        letter-spacing: -0.02em;
+      }
+
+      tfoot td.total-label {
+        text-align: left;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 0.8rem;
+      }
+
+      /* Full Width Submit Area */
+      .submit-section {
+        margin-top: 1rem;
+        margin-bottom: 3rem;
+      }
+
+      .submit-btn {
+        width: 100%;
+        background-color: var(--color-black);
+        color: var(--color-white);
+        font-family: var(--font-sans);
+        font-size: 1.125rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding: 1.25rem;
+        border: 2px solid var(--color-black);
+        cursor: pointer;
+        transition: all 0.1s ease-in-out;
+        box-shadow: 6px 6px 0px #888888;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .submit-btn:hover {
+        background-color: var(--color-white);
+        color: var(--color-black);
+        box-shadow: 6px 6px 0px var(--color-black);
+      }
+
+      .submit-btn:active {
+        transform: translate(3px, 3px);
+        box-shadow: 3px 3px 0px var(--color-black);
+      }
+
+      .submit-btn:disabled {
+        background-color: #888888;
+        border-color: #888888;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+      }
+
+      /* Help Legend / Status Indicators */
+      .legend-footer {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: -1rem;
+        margin-bottom: 3rem;
+        font-size: 0.75rem;
+        color: #555555;
+        border-top: 1px solid var(--color-gray-border);
+        padding-top: 1rem;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .key-cap {
+        background-color: var(--color-white);
+        border: 1.5px solid var(--color-black);
+        padding: 0.15rem 0.4rem;
+        font-weight: 700;
+        color: var(--color-black);
+        box-shadow: 1px 1.5px 0px rgba(0,0,0,1);
+      }
+
+      /* Toast Notifications */
+      .toast-container {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        max-width: 400px;
+        width: calc(100% - 4rem);
+      }
+
+      .toast {
+        background-color: var(--color-black);
+        color: var(--color-white);
+        border: 2px solid var(--white);
+        box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.25);
+        padding: 1.15rem 1.5rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        letter-spacing: 0.01em;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        transform: translateY(1.5rem);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .toast.error-toast {
+        background-color: #D32F2F;
+        border-color: var(--color-white);
+      }
+
+      .toast-icon {
+        font-size: 1.25rem;
+        font-weight: 900;
+      }
+
+      /* Strict Mobile-First CSS (Stacked Card pattern) */
+      @media (max-width: 767px) {
+        body {
+          padding: 1.25rem 0.75rem;
+        }
+
+        header {
+          margin-bottom: 1.5rem;
+          padding-bottom: 1rem;
+        }
+
+        .brand-title-area h1 {
+          font-size: 1.6rem;
+        }
+
+        .metadata-section {
+          padding: 1.15rem;
+          margin-bottom: 1.75rem;
+          gap: 1rem;
+          grid-template-columns: 1fr;
+          box-shadow: 4px 4px 0px rgba(0,0,0,1);
+        }
+
+        /* Collapse table grid */
+        table, thead, tbody, tfoot, th, td, tr {
+          display: block;
+        }
+
+        /* Completely hide desktop headers */
+        thead tr {
+          position: absolute;
+          top: -9999px;
+          left: -9999px;
+        }
+
+        /* Make each table row a standalone stacked card */
+        tbody tr {
+          background-color: var(--color-white);
+          border: 2px solid var(--color-black);
+          margin-bottom: 1.5rem;
+          padding: 1rem;
+          box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+        }
+
+        tbody tr:hover td {
+          background-color: transparent;
+        }
+
+        /* Make cell elements become rows with left label and right input */
+        td {
+          border: none;
+          border-bottom: 1px dashed var(--color-gray-border);
+          padding: 0.65rem 0;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        td:last-child {
+          border-bottom: none;
+        }
+
+        /* Pull data-label attribute to render as label on the left */
+        td::before {
+          content: attr(data-label);
+          font-weight: 800;
+          text-transform: uppercase;
+          font-size: 0.7rem;
+          letter-spacing: 0.05em;
+          min-width: 130px;
+          color: var(--color-black);
+          flex-shrink: 0;
+          text-align: left;
+        }
+
+        /* Style the S/N cell distinctly as a badge inside the mobile card */
+        td.col-sn {
+          background-color: var(--color-black);
+          color: var(--color-white);
+          width: 100% !important;
+          margin-bottom: 0.75rem;
+          padding: 0.4rem 0.75rem;
+          border-bottom: none;
+          justify-content: flex-start;
+        }
+
+        td.col-sn::before {
+          content: "Waitstaff Row";
+          color: var(--color-white);
+          min-width: 120px;
+        }
+
+        /* Specific design for form inputs inside cards on mobile */
+        td input, td select {
+          flex-grow: 1;
+          width: 100%;
+          max-width: calc(100% - 140px); /* Avoid overflow and keep tidy layout */
+        }
+
+        /* Style the footer totals as a summary block card */
+        tfoot {
+          margin-top: 2rem;
+          margin-bottom: 1.5rem;
+        }
+
+        tfoot tr {
+          display: block;
+          background-color: var(--color-beige-accent);
+          border: 2.5px solid var(--color-black);
+          padding: 1.25rem 1rem;
+          box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+        }
+
+        tfoot td {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border: none;
+          border-bottom: 1px dashed rgba(0, 0, 0, 0.15);
+          padding: 0.6rem 0;
+          width: 100% !important;
+          text-align: right;
+        }
+
+        tfoot td:last-child {
+          border-bottom: none;
+        }
+
+        tfoot td::before {
+          content: attr(data-label);
+          font-weight: 800;
+          text-transform: uppercase;
+          font-size: 0.75rem;
+          letter-spacing: 0.05em;
+          color: var(--color-black);
+          text-align: left;
+        }
+
+        /* Hide headers & non-numeric data columns on mobile totals */
+        tfoot td.total-label,
+        tfoot td.col-sn,
+        tfoot td.col-term {
+          display: none;
+        }
+
+        .submit-btn {
+          font-size: 1rem;
+          padding: 1.1rem;
+          box-shadow: 4px 4px 0px #888888;
+        }
+
+        .legend-footer {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.75rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Main Header -->
+      <header>
+        <div class="brand-title-area">
+          <h1>Daily Sales Remittance</h1>
+          <p>Treasury Ledger & Waitstaff Reconciliation</p>
+        </div>
+        <div class="system-badge">System Mode: Treasury</div>
+      </header>
+
+      <!-- Main Form -->
+      <form id="treasury-form" autocomplete="off">
+        <!-- Header Metadata Inputs -->
+        <div class="metadata-section">
+          <!-- Treasurer Name -->
+          <div class="form-group">
+            <label for="treasurer">Treasurer / Supervisor Name<span class="required-star">*</span></label>
+            <input 
+              type="text" 
+              id="treasurer" 
+              name="treasurer" 
+              placeholder="e.g. Christopher Okon" 
+              tabindex="1" 
+              required 
+            />
+          </div>
+
+          <!-- Date -->
+          <div class="form-group">
+            <label for="date">Business Date<span class="required-star">*</span></label>
+            <input 
+              type="date" 
+              id="date" 
+              name="date" 
+              tabindex="2" 
+              required 
+            />
+          </div>
+
+          <!-- Shift -->
+          <div class="form-group">
+            <label for="shift">Operational Shift<span class="required-star">*</span></label>
+            <select id="shift" name="shift" tabindex="3" required>
+              <option value="" disabled selected>-- Select Shift --</option>
+              <option value="Morning">Morning Shift</option>
+              <option value="Night">Night Shift</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- The 16-Row Data Entry Grid -->
+        <div class="grid-container">
+          <table id="ledger-table">
+            <thead>
+              <tr>
+                <th class="col-sn">S/N</th>
+                <th class="col-name">Waitstaff Name</th>
+                <th class="col-num">Total POS/Transfer (₦)</th>
+                <th class="col-num">Total Cash (₦)</th>
+                <th class="col-num">Total Remit (₦)</th>
+                <th class="col-num">Settled Receipts (₦)</th>
+                <th class="col-term">Terminals Returned</th>
+              </tr>
+            </thead>
+            <tbody id="ledger-body">
+              <!-- Dynamically populated by JS on load to avoid code repetition and build loop triggers -->
+            </tbody>
+            <tfoot>
+              <tr>
+                <td class="col-sn total-label" data-label="Summary">TOTALS</td>
+                <td class="col-name" data-label="-"></td>
+                <td class="col-num" data-label="Sum POS/Transfer" id="total-pos">₦0</td>
+                <td class="col-num" data-label="Sum Cash" id="total-cash">₦0</td>
+                <td class="col-num" data-label="Sum Remit" id="total-remit">₦0</td>
+                <td class="col-num" data-label="Sum Settled Receipts" id="total-settled">₦0</td>
+                <td class="col-term" data-label="-"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Submit Ledger Actions -->
+        <div class="submit-section">
+          <button type="submit" id="submit-btn" class="submit-btn" tabindex="200">
+            <span>Submit Treasury Ledger</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Keyboard and Navigation Legend -->
+      <div class="legend-footer">
+        <div class="legend-item">
+          <span class="key-cap">Tab</span>
+          <span>Next cell</span>
+        </div>
+        <div class="legend-item">
+          <span class="key-cap">Shift</span> + <span class="key-cap">Tab</span>
+          <span>Previous cell</span>
+        </div>
+        <div class="legend-item">
+          <span class="key-cap">Enter</span>
+          <span>Auto-calculates values instantly</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification Toasts Area -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const tableBody = document.getElementById('ledger-body');
+        const form = document.getElementById('treasury-form');
+        const submitBtn = document.getElementById('submit-btn');
+
+        // Dynamically build the 16 ledger rows to prevent HTML duplication and output flags
+        for (let i = 1; i <= 16; i++) {
+          const row = document.createElement('tr');
+          row.className = 'grid-row';
+          row.setAttribute('data-row', i);
+          row.innerHTML = `
+            <td class="col-sn" data-label="S/N" data-sn="${i}">${i}</td>
+            <td class="col-name" data-label="Waitstaff Name">
+              <input type="text" class="cell-input input-name" placeholder="Name" tabindex="${i * 10 + 1}" />
+            </td>
+            <td class="col-num" data-label="Total POS/Transfer (₦)">
+              <input type="number" class="cell-input input-pos" min="0" placeholder="0" tabindex="${i * 10 + 2}" />
+            </td>
+            <td class="col-num" data-label="Total Cash (₦)">
+              <input type="number" class="cell-input input-cash" min="0" placeholder="0" tabindex="${i * 10 + 3}" />
+            </td>
+            <td class="col-num" data-label="Total Remit (₦)">
+              <input type="number" class="cell-input input-remit" placeholder="0" readonly tabindex="-1" />
+            </td>
+            <td class="col-num" data-label="Settled Receipts (₦)">
+              <input type="number" class="cell-input input-settled" min="0" placeholder="0" tabindex="${i * 10 + 4}" />
+            </td>
+            <td class="col-term" data-label="POS Terminals Returned">
+              <input type="text" class="cell-input input-terminals" placeholder="Terminal #" tabindex="${i * 10 + 5}" />
+            </td>
+          `;
+          tableBody.appendChild(row);
+        }
+
+        // Default business date to today (local time in YYYY-MM-DD format)
+        const dateInput = document.getElementById('date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+
+        // Auto-focus Treasurer Name as first logical field
+        const treasurerInput = document.getElementById('treasurer');
+        if (treasurerInput) {
+          treasurerInput.focus();
+        }
+
+        // Real-time calculation engine
+        tableBody.addEventListener('input', (event) => {
+          const target = event.target;
+          
+          if (target.classList.contains('input-pos') || target.classList.contains('input-cash')) {
+            const row = target.closest('.grid-row');
+            calculateRowRemit(row);
+            calculateColumnTotals();
+          } else if (target.classList.contains('input-settled')) {
+            calculateColumnTotals();
+          }
+        });
+
+        // Calculate a single row's Total Remit
+        function calculateRowRemit(row) {
+          const posVal = parseFloat(row.querySelector('.input-pos').value) || 0;
+          const cashVal = parseFloat(row.querySelector('.input-cash').value) || 0;
+          const remitInput = row.querySelector('.input-remit');
+          
+          const totalRemit = posVal + cashVal;
+          remitInput.value = totalRemit > 0 ? totalRemit : (posVal || cashVal ? 0 : '');
+        }
+
+        // Calculate and update table footer totals
+        function calculateColumnTotals() {
+          let totalPOS = 0;
+          let totalCash = 0;
+          let totalRemit = 0;
+          let totalSettled = 0;
+
+          const rows = tableBody.querySelectorAll('.grid-row');
+          rows.forEach(row => {
+            const pos = parseFloat(row.querySelector('.input-pos').value) || 0;
+            const cash = parseFloat(row.querySelector('.input-cash').value) || 0;
+            const remit = pos + cash;
+            const settled = parseFloat(row.querySelector('.input-settled').value) || 0;
+
+            totalPOS += pos;
+            totalCash += cash;
+            totalRemit += remit;
+            totalSettled += settled;
+          });
+
+          document.getElementById('total-pos').textContent = '₦' + totalPOS.toLocaleString('en-US');
+          document.getElementById('total-cash').textContent = '₦' + totalCash.toLocaleString('en-US');
+          document.getElementById('total-remit').textContent = '₦' + totalRemit.toLocaleString('en-US');
+          document.getElementById('total-settled').textContent = '₦' + totalSettled.toLocaleString('en-US');
+        }
+
+        // Minimalist Toast Dispatcher
+        function showToast(message, type = 'success') {
+          const container = document.getElementById('toast-container');
+          const toast = document.createElement('div');
+          toast.className = `toast ${type === 'error' ? 'error-toast' : ''}`;
+          
+          const icon = document.createElement('span');
+          icon.className = 'toast-icon';
+          icon.textContent = type === 'success' ? '✓' : '✕';
+          
+          const text = document.createElement('span');
+          text.textContent = message;
+
+          toast.appendChild(icon);
+          toast.appendChild(text);
+          container.appendChild(toast);
+
+          // Trigger slide up transition
+          setTimeout(() => {
+            toast.classList.add('show');
+          }, 50);
+
+          // Auto-remove after timeout
+          setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+              toast.remove();
+            }, 350);
+          }, 4500);
+        }
+
+        // Reset all grid inputs cleanly while preserving supervisors and headers
+        function clearGridInputs() {
+          const rows = tableBody.querySelectorAll('.grid-row');
+          rows.forEach(row => {
+            row.querySelector('.input-name').value = '';
+            row.querySelector('.input-pos').value = '';
+            row.querySelector('.input-cash').value = '';
+            row.querySelector('.input-remit').value = '';
+            row.querySelector('.input-settled').value = '';
+            row.querySelector('.input-terminals').value = '';
+          });
+
+          // Recalculate totals to reset footer
+          calculateColumnTotals();
+
+          // Reset focus to first row's waitstaff name
+          const firstWaitstaffInput = tableBody.querySelector('.input-name');
+          if (firstWaitstaffInput) {
+            firstWaitstaffInput.focus();
+          }
+        }
+
+        // Form submission handling
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          // Double check required metadata fields
+          const treasurerVal = document.getElementById('treasurer').value.trim();
+          const dateVal = document.getElementById('date').value;
+          const shiftVal = document.getElementById('shift').value;
+
+          if (!treasurerVal || !dateVal || !shiftVal) {
+            showToast('All header variables (Supervisor, Date, Shift) are explicitly required.', 'error');
+            return;
+          }
+
+          // Serialize grid rows
+          const submittedRows = [];
+          const rows = tableBody.querySelectorAll('.grid-row');
+
+          rows.forEach(row => {
+            const sn = parseInt(row.getAttribute('data-row'), 10);
+            const nameInput = row.querySelector('.input-name').value.trim();
+            const posInputRaw = row.querySelector('.input-pos').value;
+            const cashInputRaw = row.querySelector('.input-cash').value;
+            const settledInputRaw = row.querySelector('.input-settled').value;
+            const terminalsInputRaw = row.querySelector('.input-terminals').value.trim();
+
+            // A row is considered "entered" if Waitstaff Name is populated, OR any financial cells are non-empty/non-zero
+            const hasName = nameInput !== '';
+            const hasPOS = posInputRaw !== '' && parseFloat(posInputRaw) !== 0;
+            const hasCash = cashInputRaw !== '' && parseFloat(cashInputRaw) !== 0;
+            const hasSettled = settledInputRaw !== '' && parseFloat(settledInputRaw) !== 0;
+            const hasTerminals = terminalsInputRaw !== '';
+
+            if (hasName || hasPOS || hasCash || hasSettled || hasTerminals) {
+              // Apply Defensive Coercion:
+              // Blank numeric cells convert to integer 0
+              const totalPOS = posInputRaw === '' ? 0 : parseFloat(posInputRaw);
+              const totalCash = cashInputRaw === '' ? 0 : parseFloat(cashInputRaw);
+              const totalSettledReceipts = settledInputRaw === '' ? 0 : parseFloat(settledInputRaw);
+              const totalRemit = totalPOS + totalCash;
+
+              // Blank terminal numbers convert to string "None"
+              const posTerminalsReturned = terminalsInputRaw === '' ? "None" : terminalsInputRaw;
+
+              submittedRows.push({
+                sn: sn,
+                waitstaffName: nameInput || "Unspecified",
+                totalPOS: totalPOS,
+                totalCash: totalCash,
+                totalRemit: totalRemit,
+                totalSettledReceipts: totalSettledReceipts,
+                posTerminalsReturned: posTerminalsReturned
+              });
+            }
+          });
+
+          if (submittedRows.length === 0) {
+            showToast('Please enter data for at least one waitstaff row before submitting.', 'error');
+            return;
+          }
+
+          // Prepare clean payload
+          const payload = {
+            treasurer: treasurerVal,
+            date: dateVal,
+            shift: shiftVal,
+            rows: submittedRows
+          };
+
+          // Disable submit button during active transmission
+          submitBtn.disabled = true;
+          const originalBtnContent = submitBtn.innerHTML;
+          submitBtn.innerHTML = '<span>Transmitting Ledger...</span>';
+
+          try {
+            const response = await fetch('https://adoryike.app.n8n.cloud/webhook/treasurysheet', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+              showToast('Treasury Ledger submitted successfully. Records saved.');
+              clearGridInputs();
+            } else {
+              throw new Error(`Server returned error code: ${response.status}`);
+            }
+          } catch (error) {
+            console.error('Submission failed:', error);
+            showToast(`Submission failed. Please verify connection and try again.`, 'error');
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnContent;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
