@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Section Daily Sales Closing</title>
+  <!-- Google Fonts for Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Reset & CSS Variables */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-color: #FAF8F5; /* Subtle beige background */
+      --panel-bg: #FFFFFF; /* Absolute white for input areas and cards */
+      --text-color: #000000; /* Absolute black */
+      --muted-color: #666666; /* Gray for labels and non-essential texts */
+      --border-color: #000000; /* Crisp black borders */
+      --border-light: #E5E5DB; /* Beige/grey divider borders */
+      --focus-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      padding: 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Container Constraints */
+    .app-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* Header Section styling */
+    header {
+      border-bottom: 3px double var(--border-color);
+      padding-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted-color);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Form Container and Header Variable Inputs */
+    .section-metadata {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      padding: 1.5rem;
+      box-shadow: 4px 4px 0px rgba(0,0,0,1);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .form-group label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Styled Input Elements */
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select {
+      width: 100%;
+      height: 2.75rem;
+      padding: 0 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.9375rem;
+      background-color: var(--panel-bg);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      border-radius: 0;
+      outline: none;
+      transition: all 0.15s ease-in-out;
+    }
+
+    /* Ensure number inputs don't have arrows (cleaner look) */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type="number"] {
+      -moz-appearance: textfield;
+      font-family: var(--font-mono);
+      text-align: right;
+    }
+
+    /* Focus Highlights - Strict High Contrast */
+    input:focus,
+    select:focus {
+      border-width: 2px;
+      border-color: var(--border-color);
+      box-shadow: var(--focus-shadow);
+      background-color: #FFFFFF;
+    }
+
+    /* Data Entry Grid Table Styling */
+    .grid-container {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      box-shadow: 6px 6px 0px rgba(0,0,0,1);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    thead {
+      background-color: var(--border-color);
+      color: var(--panel-bg);
+    }
+
+    th {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.875rem 1rem;
+      border: 1px solid var(--border-color);
+    }
+
+    td {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border-light);
+    }
+
+    /* Read only column */
+    .readonly-cell {
+      background-color: var(--bg-color);
+      font-family: var(--font-mono);
+      font-weight: 600;
+      text-align: right;
+      padding-right: 1rem;
+      user-select: none;
+    }
+
+    tr:hover td {
+      background-color: rgba(0,0,0,0.015);
+    }
+
+    /* Bottom Summary Total Row */
+    .total-row {
+      background-color: var(--bg-color);
+      font-weight: 700;
+    }
+
+    .total-row td {
+      border-top: 2px solid var(--border-color);
+      border-bottom: 2px solid var(--border-color);
+      padding: 1rem 0.75rem;
+    }
+
+    .total-label {
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .total-val {
+      font-family: var(--font-mono);
+      text-align: right;
+      font-size: 1rem;
+    }
+
+    /* Submit Button styling */
+    .submit-container {
+      margin-top: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    .btn-submit {
+      width: 100%;
+      height: 3.5rem;
+      background-color: var(--border-color);
+      color: var(--panel-bg);
+      border: none;
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 4px 4px 0px rgba(0,0,0,0.2);
+    }
+
+    .btn-submit:hover {
+      background-color: #222222;
+      transform: translateY(-1px);
+      box-shadow: 5px 5px 0px rgba(0,0,0,0.35);
+    }
+
+    .btn-submit:active {
+      transform: translateY(1px);
+      box-shadow: 2px 2px 0px rgba(0,0,0,0.25);
+    }
+
+    /* Success Toast styling */
+    .toast-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--border-color);
+      color: var(--panel-bg);
+      padding: 1rem 1.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: 4px 4px 0px rgba(0,0,0,0.25);
+      opacity: 0;
+      transform: translateY(1rem);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Mobile Responsive Logic (Strict Mobile-First stacked cards) */
+    @media (max-width: 767px) {
+      body {
+        padding: 1rem;
+      }
+
+      .app-container {
+        gap: 1.5rem;
+      }
+
+      .section-metadata {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 1rem;
+      }
+
+      /* Grid / Table to Mobile Stacked Cards */
+      .grid-container {
+        border: none;
+        box-shadow: none;
+        background: transparent;
+      }
+
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead {
+        display: none; /* Hide standard headers */
+      }
+
+      /* Each row behaves as an elegant independent card with sharp borders */
+      tr.grid-row {
+        background: var(--panel-bg);
+        border: 2px solid var(--border-color);
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        box-shadow: 4px 4px 0px rgba(0,0,0,1);
+      }
+
+      /* Row styling for each input field container */
+      tr.grid-row td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: none;
+        border-bottom: 1px solid var(--border-light);
+        padding: 0.65rem 0;
+        gap: 1rem;
+      }
+
+      tr.grid-row td:last-child {
+        border-bottom: none;
+      }
+
+      /* Dynamically pulling headers from data-label and aligning neatly */
+      tr.grid-row td::before {
+        content: attr(data-label);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-color);
+        width: 40%;
+        text-align: left;
+      }
+
+      /* Style input inside mobile stacked cards */
+      tr.grid-row td input {
+        width: 60%;
+        height: 2.5rem;
+      }
+
+      /* Styling read-only cells on mobile */
+      tr.grid-row td.readonly-cell {
+        background-color: transparent;
+        font-size: 1rem;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      /* The bottom static sum panel is reconstructed as a distinct block */
+      .total-row {
+        background: var(--panel-bg);
+        border: 2px solid var(--border-color);
+        margin-top: 2rem;
+        padding: 1rem;
+        box-shadow: 4px 4px 0px rgba(0,0,0,1);
+      }
+
+      .total-row td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border: none;
+        border-bottom: 1px solid var(--border-light);
+      }
+
+      .total-row td:last-child {
+        border-bottom: none;
+      }
+
+      .total-row td::before {
+        content: attr(data-label);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-color);
+        width: 50%;
+        text-align: left;
+      }
+
+      .total-row td .total-label {
+        display: none; /* Hide standard redundant label */
+      }
+
+      .total-row td .total-val {
+        width: auto;
+        text-align: right;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <header>
+      <h1>Section Sales Closing</h1>
+      <div class="subtitle">Daily Ledger Closing Data Entry</div>
+    </header>
+
+    <form id="closing-ledger-form">
+      <!-- Metadata Header Variables -->
+      <section class="section-metadata">
+        <div class="form-group">
+          <label for="section-name">Section Name *</label>
+          <select id="section-name" required tabindex="1">
+            <option value="" disabled selected>Select Section...</option>
+            <option value="LE PITA N/CLUB">LE PITA N/CLUB</option>
+            <option value="HINDI RESTOBAR">HINDI RESTOBAR</option>
+            <option value="BAR">BAR</option>
+            <option value="MIXOLOGY">MIXOLOGY</option>
+            <option value="MAIN KITCHEN">MAIN KITCHEN</option>
+            <option value="PASTRY KITCHEN">PASTRY KITCHEN</option>
+            <option value="SHISHA">SHISHA</option>
+            <option value="ICE CREAM">ICE CREAM</option>
+            <option value="CIGARETTES">CIGARETTES</option>
+            <option value="SUYA ET AL">SUYA ET AL</option>
+            <option value="GRILLED FISH">GRILLED FISH</option>
+            <option value="FOIL-WRAPPED FISH">FOIL-WRAPPED FISH</option>
+            <option value="ARABIAN TEA">ARABIAN TEA</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="closing-date">Date *</label>
+          <input type="date" id="closing-date" required tabindex="2">
+        </div>
+
+        <div class="form-group">
+          <label for="shift">Shift *</label>
+          <select id="shift" required tabindex="3">
+            <option value="" disabled selected>Select Shift...</option>
+            <option value="Morning">Morning</option>
+            <option value="Night">Night</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="supervisor-id">Supervisor ID *</label>
+          <input type="text" id="supervisor-id" placeholder="Enter ID..." required tabindex="4">
+        </div>
+      </section>
+
+      <!-- Data Entry Grid -->
+      <section class="grid-container" style="margin-top: 1.5rem;">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 40%;">Waiter / Waitress Name</th>
+              <th style="width: 20%; text-align: right;">VIP Charges (₦)</th>
+              <th style="width: 20%; text-align: right;">Standard Prices (₦)</th>
+              <th style="width: 20%; text-align: right;">Total Served (₦)</th>
+            </tr>
+          </thead>
+          <tbody id="grid-body">
+            <!-- Dynamically populated via JS to avoid index mismatch -->
+          </tbody>
+          <tfoot>
+            <tr class="total-row">
+              <td data-label="Summary"><span class="total-label">TOTAL</span></td>
+              <td data-label="Total VIP (₦)" class="total-val" id="sum-vip">₦0</td>
+              <td data-label="Total Standard (₦)" class="total-val" id="sum-standard">₦0</td>
+              <td data-label="Grand Total (₦)" class="total-val" id="sum-total" style="font-weight: 800;">₦0</td>
+            </tr>
+          </tfoot>
+        </table>
+      </section>
+
+      <!-- Full-Width Submission Action Button -->
+      <div class="submit-container">
+        <button type="submit" class="btn-submit" tabindex="50">Submit to Ledger</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Minimalist Toasts Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Applet Logic & Strict Data Math -->
+  <script>
+    // Set default date to today
+    document.addEventListener('DOMContentLoaded', () => {
+      const dateInput = document.getElementById('closing-date');
+      const today = new Date().toISOString().split('T')[0];
+      dateInput.value = today;
+
+      // Populate 15 Blank Rows programmatically with strict tabindex ordering
+      const gridBody = document.getElementById('grid-body');
+      for (let i = 0; i < 15; i++) {
+        const row = document.createElement('tr');
+        row.className = 'grid-row';
+        row.id = `row-${i}`;
+
+        // Waiter Name Input
+        const tdName = document.createElement('td');
+        tdName.setAttribute('data-label', 'Waiter/Waitress Name');
+        const inputName = document.createElement('input');
+        inputName.type = 'text';
+        inputName.className = 'input-waiter';
+        inputName.placeholder = `Waiter ${i + 1}`;
+        inputName.setAttribute('tabindex', 5 + (i * 3));
+        tdName.appendChild(inputName);
+
+        // VIP Charges Input
+        const tdVip = document.createElement('td');
+        tdVip.setAttribute('data-label', 'VIP Charges (₦)');
+        const inputVip = document.createElement('input');
+        inputVip.type = 'number';
+        inputVip.className = 'input-vip';
+        inputVip.min = '0';
+        inputVip.placeholder = '0';
+        inputVip.setAttribute('tabindex', 5 + (i * 3) + 1);
+        tdVip.appendChild(inputVip);
+
+        // Standard Prices Input
+        const tdStandard = document.createElement('td');
+        tdStandard.setAttribute('data-label', 'Standard Prices (₦)');
+        const inputStandard = document.createElement('input');
+        inputStandard.type = 'number';
+        inputStandard.className = 'input-standard';
+        inputStandard.min = '0';
+        inputStandard.placeholder = '0';
+        inputStandard.setAttribute('tabindex', 5 + (i * 3) + 2);
+        tdStandard.appendChild(inputStandard);
+
+        // Calculated Total Served Cell
+        const tdTotal = document.createElement('td');
+        tdTotal.setAttribute('data-label', 'Total Served (₦)');
+        tdTotal.className = 'readonly-cell input-total';
+        tdTotal.innerText = '0';
+        // Total calculated read-only gets no tab index or -1
+        
+        row.appendChild(tdName);
+        row.appendChild(tdVip);
+        row.appendChild(tdStandard);
+        row.appendChild(tdTotal);
+        
+        gridBody.appendChild(row);
+      }
+
+      // Hook up real-time mathematical recalculations
+      const inputsVip = document.querySelectorAll('.input-vip');
+      const inputsStandard = document.querySelectorAll('.input-standard');
+      const inputsWaiter = document.querySelectorAll('.input-waiter');
+
+      const recalculateAll = () => {
+        let totalVipSum = 0;
+        let totalStandardSum = 0;
+        let grandTotalSum = 0;
+
+        for (let i = 0; i < 15; i++) {
+          const vipVal = parseFloat(inputsVip[i].value) || 0;
+          const stdVal = parseFloat(inputsStandard[i].value) || 0;
+          const rowTotal = vipVal + stdVal;
+
+          // Update individual row total
+          const totalCell = document.querySelector(`#row-${i} .input-total`);
+          totalCell.innerText = rowTotal.toLocaleString('en-US');
+
+          totalVipSum += vipVal;
+          totalStandardSum += stdVal;
+          grandTotalSum += rowTotal;
+        }
+
+        // Update overall summary totals at the bottom
+        document.getElementById('sum-vip').innerText = `₦${totalVipSum.toLocaleString('en-US')}`;
+        document.getElementById('sum-standard').innerText = `₦${totalStandardSum.toLocaleString('en-US')}`;
+        document.getElementById('sum-total').innerText = `₦${grandTotalSum.toLocaleString('en-US')}`;
+      };
+
+      // Add input listeners for real-time reactions
+      gridBody.addEventListener('input', (e) => {
+        if (e.target.classList.contains('input-vip') || e.target.classList.contains('input-standard')) {
+          recalculateAll();
+        }
+      });
+
+      // Defensive submission handler
+      const form = document.getElementById('closing-ledger-form');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // 1. Gather Metadata Header inputs
+        const sectionName = document.getElementById('section-name').value;
+        const closingDate = document.getElementById('closing-date').value;
+        const shift = document.getElementById('shift').value;
+        const supervisorId = document.getElementById('supervisor-id').value;
+
+        if (!sectionName || !closingDate || !shift || !supervisorId) {
+          showToast('Error: All header metadata is required.', 'error');
+          return;
+        }
+
+        // 2. Gather Row Records
+        const submittedRows = [];
+        let rowCount = 0;
+
+        for (let i = 0; i < 15; i++) {
+          const nameInput = inputsWaiter[i].value.trim();
+          const vipRaw = inputsVip[i].value;
+          const stdRaw = inputsStandard[i].value;
+
+          // Check if row is completely unpopulated
+          const isRowEmpty = !nameInput && vipRaw === '' && stdRaw === '';
+          if (isRowEmpty) {
+            continue; // Ignore fully empty row
+          }
+
+          // Strict Zero Coercion for numbers left blank
+          const vipVal = vipRaw === '' ? 0 : parseInt(vipRaw, 10);
+          const stdVal = stdRaw === '' ? 0 : parseInt(stdRaw, 10);
+          const totalVal = vipVal + stdVal;
+
+          submittedRows.push({
+            waiterName: nameInput || `Unnamed Waiter`,
+            vipCharges: vipVal,
+            standardPrices: stdVal,
+            totalServed: totalVal
+          });
+          
+          rowCount++;
+        }
+
+        if (rowCount === 0) {
+          showToast('Error: Enter at least one waiter or transaction to submit.', 'error');
+          return;
+        }
+
+        // 3. Format complete defensive JSON Payload
+        const payload = {
+          sectionName: sectionName,
+          date: closingDate,
+          shift: shift,
+          supervisorId: supervisorId,
+          rows: submittedRows
+        };
+
+        try {
+          const response = await fetch('https://adoryike.app.n8n.cloud/webhook/sectionsheets', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (response.ok) {
+            showToast('Ledger successfully submitted!', 'success');
+            
+            // Success Routine:
+            // Clear all grid inputs
+            inputsWaiter.forEach(input => input.value = '');
+            inputsVip.forEach(input => input.value = '');
+            inputsStandard.forEach(input => input.value = '');
+            
+            // Reset totals
+            recalculateAll();
+
+            // Clear Section Name, keep other metadata headers intact
+            document.getElementById('section-name').selectedIndex = 0;
+
+            // Reset focus to Section Name dropdown
+            document.getElementById('section-name').focus();
+          } else {
+            showToast(`Submission failed. Status: ${response.status}`, 'error');
+          }
+        } catch (err) {
+          console.error(err);
+          showToast('Network error occurred. Please try again.', 'error');
+        }
+      });
+    });
+
+    // Elegant high-contrast toast notification
+    function showToast(message, type) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      
+      if (type === 'error') {
+        toast.style.backgroundColor = '#FF0000';
+        toast.style.color = '#FFFFFF';
+      } else {
+        toast.style.backgroundColor = '#000000';
+        toast.style.color = '#FAF8F5';
+      }
+
+      toast.innerText = message;
+      container.appendChild(toast);
+
+      // Trigger animations
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 50);
+
+      // Fade out and remove toast after 4 seconds
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
+      }, 4000);
+    }
+  </script>
+</body>
+</html>
