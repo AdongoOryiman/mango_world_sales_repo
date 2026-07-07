@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Waitstaff Daily Sales Record</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+      /* Custom Scrollbar for aesthetic uniformity */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #FAFAFA;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #000000;
+        border: 2px solid #FAFAFA;
+      }
+
+      /* Global Reset & Base */
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background-color: #FAFAFA;
+        color: #000000;
+        margin: 0;
+        padding: 40px 20px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        background-color: #FFFFFF;
+        border: 2px solid #000000;
+        padding: 40px;
+        margin: 0 auto;
+      }
+
+      /* Header & Title Area */
+      .header-area {
+        margin-bottom: 40px;
+        border-bottom: 2px solid #000000;
+        padding-bottom: 24px;
+      }
+
+      .header-area h1 {
+        font-size: 28px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: -0.02em;
+        margin: 0 0 8px 0;
+      }
+
+      .header-area p {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #666666;
+        margin: 0;
+      }
+
+      /* Metadata Header Form Grid */
+      .metadata-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+
+      @media (max-width: 991px) {
+        .metadata-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 767px) {
+        .metadata-grid {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .input-group label {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 8px;
+      }
+
+      .input-group input, 
+      .input-group select {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 12px;
+        border: 1px solid #000000;
+        border-radius: 0;
+        background-color: #FFFFFF;
+        color: #000000;
+        outline: none;
+        transition: all 0.15s ease-in-out;
+      }
+
+      .input-group input:focus, 
+      .input-group select:focus {
+        border-width: 2px;
+        background-color: #F5F5DC;
+      }
+
+      /* Grid & Table Styles */
+      .table-wrapper {
+        overflow-x: auto;
+        margin-bottom: 32px;
+        border: 2px solid #000000;
+      }
+
+      table.data-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+      }
+
+      table.data-table th {
+        background-color: #000000;
+        color: #FFFFFF;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding: 14px;
+        border: 1px solid #000000;
+      }
+
+      table.data-table td {
+        padding: 8px;
+        border: 1px solid #000000;
+      }
+
+      /* Inline Grid Inputs */
+      table.data-table input {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        width: 100%;
+        padding: 8px;
+        border: 1px solid transparent;
+        border-radius: 0;
+        background-color: transparent;
+        color: #000000;
+        outline: none;
+        text-align: right;
+        transition: all 0.15s ease-in-out;
+      }
+
+      /* Align section name left */
+      table.data-table .section-name {
+        font-weight: 800;
+        font-size: 13px;
+        padding-left: 14px;
+        text-transform: uppercase;
+      }
+
+      table.data-table input:focus {
+        border: 1px solid #000000;
+        background-color: #F5F5DC;
+      }
+
+      /* Readonly fields styling */
+      table.data-table input[readonly] {
+        color: #000000;
+        font-weight: 700;
+        cursor: default;
+      }
+
+      /* Disabled input fields */
+      table.data-table input:disabled {
+        background-color: #FAFAFA;
+        color: #888888;
+        text-align: center;
+        font-weight: 500;
+        font-size: 12px;
+        cursor: not-allowed;
+        border: none;
+      }
+
+      /* Total row styling */
+      .total-row {
+        background-color: #F5F5DC !important;
+        font-weight: 700;
+      }
+
+      .total-row td {
+        border-top: 2px solid #000000;
+        border-bottom: 2px solid #000000;
+        padding: 14px 8px;
+        font-size: 13px;
+      }
+
+      .total-value {
+        font-weight: 900;
+        text-align: right;
+        padding-right: 8px;
+      }
+
+      .total-label {
+        font-weight: 900;
+        padding-left: 14px;
+        letter-spacing: 0.05em;
+      }
+
+      /* Submit Button & Actions */
+      .actions-area {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .submit-btn {
+        width: 100%;
+        background-color: #000000;
+        color: #FFFFFF;
+        border: 2px solid #000000;
+        padding: 18px;
+        font-size: 14px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+      }
+
+      .submit-btn:hover {
+        background-color: #FFFFFF;
+        color: #000000;
+      }
+
+      .submit-btn:focus {
+        outline: none;
+        background-color: #F5F5DC;
+        color: #000000;
+      }
+
+      .submit-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* Toast System */
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background-color: #000000;
+        color: #FFFFFF;
+        border: 1px solid #FFFFFF;
+        padding: 16px 24px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        transform: translateY(100px);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 1000;
+      }
+
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      /* Responsive "Stacked Card" pattern on mobile */
+      @media (max-width: 767px) {
+        body {
+          padding: 16px 8px;
+        }
+
+        .container {
+          padding: 20px;
+          border-width: 2px;
+        }
+
+        .table-wrapper {
+          overflow: visible;
+          border: none;
+        }
+
+        table.data-table, 
+        table.data-table tbody, 
+        table.data-table tfoot, 
+        table.data-table tr, 
+        table.data-table td {
+          display: block;
+          width: 100%;
+        }
+
+        table.data-table thead {
+          display: none; /* Hide standard headers on mobile */
+        }
+
+        /* Each row becomes a block card */
+        table.data-table tbody tr {
+          background-color: #FFFFFF;
+          border: 2px solid #000000;
+          margin-bottom: 20px;
+          padding: 12px;
+        }
+
+        table.data-table tbody tr:nth-child(even) {
+          background-color: #FFFFFF; /* Override alternate shading for cards */
+        }
+
+        /* TD rows become flex items */
+        table.data-table tbody td {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 8px 0;
+          border: none;
+          border-bottom: 1px solid #E5E5E5;
+        }
+
+        table.data-table tbody td:last-child {
+          border-bottom: none;
+        }
+
+        /* Hide custom borders or backgrounds in inputs on mobile card details */
+        table.data-table tbody td input {
+          width: 60%;
+          border: 1px solid #000000;
+          padding: 6px 10px;
+          background-color: #FFFFFF;
+        }
+
+        table.data-table tbody td input:focus {
+          background-color: #F5F5DC;
+        }
+
+        /* Pull label from data-label attribute */
+        table.data-table tbody td::before {
+          content: attr(data-label);
+          font-weight: 700;
+          font-size: 11px;
+          text-transform: uppercase;
+          color: #666666;
+          letter-spacing: 0.05em;
+          padding-left: 4px;
+          text-align: left;
+          flex-shrink: 0;
+          width: 35%;
+        }
+
+        /* Special visual design for the Section Name on mobile */
+        table.data-table tbody td[data-label="Section Name"] {
+          display: block;
+          padding: 4px 0 10px 0;
+          margin-bottom: 8px;
+          border-bottom: 2px solid #000000;
+        }
+
+        table.data-table tbody td[data-label="Section Name"]::before {
+          display: none; /* Hide label */
+        }
+
+        table.data-table .section-name {
+          font-size: 15px;
+          font-weight: 800;
+          padding-left: 4px;
+          text-align: left;
+          color: #000000;
+        }
+
+        /* Total card styling on mobile */
+        table.data-table tfoot tr {
+          background-color: #F5F5DC;
+          border: 2px solid #000000;
+          padding: 12px;
+          margin-top: 24px;
+          margin-bottom: 12px;
+        }
+
+        table.data-table tfoot td {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 8px 0;
+          border: none;
+          border-bottom: 1px solid #000000;
+        }
+
+        table.data-table tfoot td:last-child {
+          border-bottom: none;
+        }
+
+        table.data-table tfoot td::before {
+          content: attr(data-label);
+          font-weight: 800;
+          font-size: 11px;
+          text-transform: uppercase;
+          color: #000000;
+          letter-spacing: 0.05em;
+          padding-left: 4px;
+        }
+
+        table.data-table tfoot .total-label {
+          display: block;
+          font-size: 15px;
+          font-weight: 900;
+          border-bottom: 2px solid #000000;
+          padding-bottom: 8px;
+          margin-bottom: 8px;
+        }
+
+        table.data-table tfoot .total-label::before {
+          display: none;
+        }
+
+        .total-value {
+          font-size: 14px;
+          padding-right: 4px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header-area">
+        <h1>Waitstaff Daily Sales Record</h1>
+        <p>Ledger Entry System</p>
+      </div>
+
+      <form id="sales-record-form" novalidate>
+        <!-- Header Variables -->
+        <div class="metadata-grid">
+          <div class="input-group">
+            <label for="waitstaff-name">Waitstaff Name *</label>
+            <input type="text" id="waitstaff-name" name="waitstaffName" required tabindex="1">
+          </div>
+          <div class="input-group">
+            <label for="date">Date *</label>
+            <input type="date" id="date" name="date" required tabindex="2">
+          </div>
+          <div class="input-group">
+            <label for="shift">Shift *</label>
+            <select id="shift" name="shift" required tabindex="3">
+              <option value="" disabled selected>Select Shift</option>
+              <option value="Morning">Morning</option>
+              <option value="Night">Night</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="supervisor-id">Supervisor ID *</label>
+            <input type="text" id="supervisor-id" name="supervisorId" required tabindex="4">
+          </div>
+        </div>
+
+        <!-- Data Entry Grid -->
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 22%">Section Name</th>
+                <th style="width: 12%; text-align: right">MD's Bill (₦)</th>
+                <th style="width: 12%; text-align: right">VIP Charges (₦)</th>
+                <th style="width: 12%; text-align: right">Standard Prices (₦)</th>
+                <th style="width: 14%; text-align: right">Total Served (₦)</th>
+                <th style="width: 14%; text-align: right">Grill Cross-Payment (₦)</th>
+                <th style="width: 14%; text-align: right">Net Non-Grill (₦)</th>
+              </tr>
+            </thead>
+            <tbody id="grid-body">
+              <!-- Row 1 -->
+              <tr id="row-1">
+                <td class="section-name" data-label="Section Name">LE PITA N/CLUB</td>
+                <td data-label="MD's Bill (₦)"><input type="number" min="0" id="md-1" class="calc-input md-bill" tabindex="5"></td>
+                <td data-label="VIP Charges (₦)"><input type="number" min="0" id="vip-1" class="calc-input vip-charges" tabindex="6"></td>
+                <td data-label="Standard Prices (₦)"><input type="number" min="0" id="std-1" class="calc-input std-price" tabindex="7"></td>
+                <td data-label="Total Served (₦)"><input type="number" readonly tabindex="-1" id="served-1" class="total-served" value="0"></td>
+                <td data-label="Grill Cross-Payment (₦)"><input type="text" value="N/A" disabled id="grill-1" class="grill-payment"></td>
+                <td data-label="Net Non-Grill Received (₦)"><input type="number" readonly tabindex="-1" id="net-1" class="net-received" value="0"></td>
+              </tr>
+              <!-- Row 2 -->
+              <tr id="row-2">
+                <td class="section-name" data-label="Section Name">HINDI RESTOBAR</td>
+                <td data-label="MD's Bill (₦)"><input type="number" min="0" id="md-2" class="calc-input md-bill" tabindex="8"></td>
+                <td data-label="VIP Charges (₦)"><input type="number" min="0" id="vip-2" class="calc-input vip-charges" tabindex="9"></td>
+                <td data-label="Standard Prices (₦)"><input type="number" min="0" id="std-2" class="calc-input std-price" tabindex="10"></td>
+                <td data-label="Total Served (₦)"><input type="number" readonly tabindex="-1" id="served-2" class="total-served" value="0"></td>
+                <td data-label="Grill Cross-Payment (₦)"><input type="text" value="N/A" disabled id="grill-2" class="grill-payment"></td>
+                <td data-label="Net Non-Grill Received (₦)"><input type="number" readonly tabindex="-1" id="net-2" class="net-received" value="0"></td>
+              </tr>
+              <!-- Row 3 -->
+              <tr id="row-3">
+                <td class="section-name" data-label="Section Name">BAR</td>
+                <td data-label="MD's Bill (₦)"><input type="number" min="0" id="md-3" class="calc-input md-bill" tabindex="11"></td>
+                <td data-label="VIP Charges (₦)"><input type="number" min="0" id="vip-3" class="calc-input vip-charges" tabindex="12"></td>
+                <td data-label="Standard Prices (₦)"><input type="number" min="0" id="std-3" class="calc-input std-price" tabindex="13"></td>
+                <td data-label="Total Served (₦)"><input type="number" readonly tabindex="-1" id="served-3" class="total-served" value="0"></td>
+                <td data-label="Grill Cross-Payment (₦)"><input type="text" value="N/A" disabled id="grill-3" class="grill-payment"></td>
+                <td data-label="Net Non-Grill Received (₦)"><input type="number" readonly tabindex="-1" id="net-3" class="net-received" value="0"></td>
+              </tr>
+              <!-- Row 4 -->
+              <tr id="row-4">
+                <td class="section-name" data-label="Section Name">MIXOLOGY</td>
+                <td data-label="MD's Bill (₦)"><input type="number" min="0" id="md-4" class="calc-input md-bill" tabindex="14"></td>
+                <td data-label="VIP Charges (₦)"><input type="number" min="0" id="vip-4" class="calc-input vip-charges" tabindex="15"></td>
+                <td data-label="Standard Prices (₦)"><input type="number" min="0" id="std-4" class="calc-input std-price" tabindex="16"></td>
+                <td data-label="Total Served (₦)"><input type="number" readonly tabindex="-1" id="served-4" class="total-served" value="0"></td>
+                <td data-label="Grill Cross-Payment (₦)"><input type="text" value="N/A" disabled id="grill-4" class="grill-payment"></td>
+                <td data-label="Net Non-Grill Received (₦)"><input type="number" readonly tabindex="-1" id="net-4" class="net-received" value="0"></td>
+              </tr>
+              <!-- Row 5 -->
+              <tr id="row-5">
+                <td class="section-name" data-label="Section Name">MAIN KITCHEN</td>
+                <td data-label="MD's Bill (₦)"><input type="number" min="0" id="md-5" class="calc-input md-bill" tabindex="17"></td>
+                <td data-label="VIP Charges (₦)"><input type="number" min="0" id="vip-5" class="calc-input vip-charges" tabindex="18"></td>
+                <td data-label="Standard Prices (₦)"><input type="number" min="0" id="std-5" class="calc-input std-price" tabindex="19"></td>
+                <td data-label="Total Served (₦)"><input type="number" readonly tabindex="-1" id="served-5" class="total-served" value="0"></td>
+                <td data-label="Grill Cross-Payment (₦)"><input type="text" value="N/A" disabled id="grill-5" class="grill-payment"></td>
+                <td data-label="Net Non-Grill Received (₦)"><input type="number" readonly tabindex="-1" id="net-5" class="net-received" value="0"></td>
+              </tr>
+              <!-- Row 6 -->
+              <tr id="row-6">
+                <td class="section-name" data-label="Section Name">PASTRY KITCHEN</td>
+                <td data-label="MD's Bill (₦)"><input type="number" min="0" id="md-6" class="calc-input md-bill" tabindex="20"></td>
+                <td data-label="VIP Charges (₦)"><input type="number" min="0" id="vip-6" class="calc-input vip-charges" tabindex="21"></td>
+                <td data-label="Standard Prices (₦)"><input type="number" min="0" id="std-6" class="calc-input std-price" tabindex="22"></td>
+                <td data-label="Total Served (₦)"><input type="number" readonly tabindex="-1" id="served-6" class="total-served" value="0"></td>
+                <td data-label="Grill Cross-Payment (₦)"><input type="text" value="N/A" disabled id="grill-6" class="grill-payment"></td>
+                <td data-label="Net Non-Grill Received (₦)"><input type="number" readonly tabindex="-1" id="net-6" class="net-received" value="0"></td>
+              </tr>
+              <!-- Row 7 -->
+              <tr id="row-7">
+                <td class="section-name" data-label="Section Name">SHISHA</td>
+                <td data-label="MD's Bill (₦)"><input type="number" min="0" id="md-7" class="calc-input md-bill" tabindex="23"></td>
+                <td data-label="VIP Charges (₦)"><input type="number" min="0" id="vip-7" class="calc-input vip-charges" tabindex="24"></td>
+                <td data-label="Standard Prices (₦)"><input type="number" min="0" id="std-7" class="calc-input std-price" tabindex="25"></td>
+                <td data-label="Total Served (₦)"><input type="number" readonly tabindex="-1" id="served-7" class="total-served" value="0"></td>
+                <td data-label="Grill Cross-Payment (₦)"><input type="text" value="N/A" disabled id="grill-7" class="grill-payment"></td>
+                <td data-label="Net Non-Grill Received (₦)"><input type="number" readonly tabindex="-1" id="net-7" class="net-received" value="0"></td>
+              </tr>
+              <!-- Row 8 -->
+              <tr id="row-8">
+                <td class="section-name" data-label="Section Name">ICE CREAM</td>
+                <td data-label="MD's Bill (₦)"><input type="number" min="0" id="md-8" class="calc-input md-bill" tabindex="26"></td>
+                <td data-label="VIP Charges (₦)"><input type="number" min="0" id="vip-8" class="calc-input vip-charges" tabindex="27"></td>
+                <td data-label="Standard Prices (₦)"><input type="number" min="0" id="std-8" class="calc-input std-price" tabindex="28"></td>
+                <td data-label="Total Served (₦)"><input type="number" readonly tabindex="-1" id="served-8" class="total-served" value="0"></td>
+                <td data-label="Grill Cross-Payment (₦)"><input type="text" value="N/A" disabled id="grill-8" class="grill-payment"></td>
+                <td data-label="Net Non-Grill Received (₦)"><input type="number" readonly tabindex="-1" id="net-8" class="net-received" value="0"></td>
+              </tr>
+              <!-- Row 9 -->
+              <tr id="row-9">
+                <td class="section-name" data-label="Section Name">CIGARETTES</td>
+                <td data-label="MD's Bill (₦)"><input type="number" min="0" id="md-9" class="calc-input md-bill" tabindex="29"></td>
+                <td data-label="VIP Charges (₦)"><input type="number" min="0" id="vip-9" class="calc-input vip-charges" tabindex="30"></td>
+                <td data-label="Standard Prices (₦)"><input type="number" min="0" id="std-9" class="calc-input std-price" tabindex="31"></td>
+                <td data-label="Total Served (₦)"><input type="number" readonly tabindex="-1" id="served-9" class="total-served" value="0"></td>
+                <td data-label="Grill Cross-Payment (₦)"><input type="text" value="N/A" disabled id="grill-9" class="grill-payment"></td>
+                <td data-label="Net Non-Grill Received (₦)"><input type="number" readonly tabindex="-1" id="net-9" class="net-received" value="0"></td>
+              </tr>
+              <!-- Row 10 -->
+              <tr id="row-10">
+                <td class="section-name" data-label="Section Name">SUYA ET AL</td>
+                <td data-label="MD's Bill (₦)"><input type="number" min="0" id="md-10" class="calc-input md-bill" tabindex="32"></td>
+                <td data-label="VIP Charges (₦)"><input type="number" min="0" id="vip-10" class="calc-input vip-charges" tabindex="33"></td>
+                <td data-label="Standard Prices (₦)"><input type="number" min="0" id="std-10" class="calc-input std-price" tabindex="34"></td>
+                <td data-label="Total Served (₦)"><input type="number" readonly tabindex="-1" id="served-10" class="total-served" value="0"></td>
+                <td data-label="Grill Cross-Payment (₦)"><input type="number" min="0" id="grill-10" class="calc-input grill-payment" tabindex="35"></td>
+                <td data-label="Net Non-Grill Received (₦)"><input type="number" readonly tabindex="-1" id="net-10" class="net-received" value="0"></td>
+              </tr>
+              <!-- Row 11 -->
+              <tr id="row-11">
+                <td class="section-name" data-label="Section Name">GRILLED FISH</td>
+                <td data-label="MD's Bill (₦)"><input type="number" min="0" id="md-11" class="calc-input md-bill" tabindex="36"></td>
+                <td data-label="VIP Charges (₦)"><input type="number" min="0" id="vip-11" class="calc-input vip-charges" tabindex="37"></td>
+                <td data-label="Standard Prices (₦)"><input type="number" min="0" id="std-11" class="calc-input std-price" tabindex="38"></td>
+                <td data-label="Total Served (₦)"><input type="number" readonly tabindex="-1" id="served-11" class="total-served" value="0"></td>
+                <td data-label="Grill Cross-Payment (₦)"><input type="number" min="0" id="grill-11" class="calc-input grill-payment" tabindex="39"></td>
+                <td data-label="Net Non-Grill Received (₦)"><input type="number" readonly tabindex="-1" id="net-11" class="net-received" value="0"></td>
+              </tr>
+              <!-- Row 12 -->
+              <tr id="row-12">
+                <td class="section-name" data-label="Section Name">FOIL-WRAPPED FISH</td>
+                <td data-label="MD's Bill (₦)"><input type="number" min="0" id="md-12" class="calc-input md-bill" tabindex="40"></td>
+                <td data-label="VIP Charges (₦)"><input type="number" min="0" id="vip-12" class="calc-input vip-charges" tabindex="41"></td>
+                <td data-label="Standard Prices (₦)"><input type="number" min="0" id="std-12" class="calc-input std-price" tabindex="42"></td>
+                <td data-label="Total Served (₦)"><input type="number" readonly tabindex="-1" id="served-12" class="total-served" value="0"></td>
+                <td data-label="Grill Cross-Payment (₦)"><input type="number" min="0" id="grill-12" class="calc-input grill-payment" tabindex="43"></td>
+                <td data-label="Net Non-Grill Received (₦)"><input type="number" readonly tabindex="-1" id="net-12" class="net-received" value="0"></td>
+              </tr>
+              <!-- Row 13 -->
+              <tr id="row-13">
+                <td class="section-name" data-label="Section Name">ARABIAN TEA</td>
+                <td data-label="MD's Bill (₦)"><input type="number" min="0" id="md-13" class="calc-input md-bill" tabindex="44"></td>
+                <td data-label="VIP Charges (₦)"><input type="number" min="0" id="vip-13" class="calc-input vip-charges" tabindex="45"></td>
+                <td data-label="Standard Prices (₦)"><input type="number" min="0" id="std-13" class="calc-input std-price" tabindex="46"></td>
+                <td data-label="Total Served (₦)"><input type="number" readonly tabindex="-1" id="served-13" class="total-served" value="0"></td>
+                <td data-label="Grill Cross-Payment (₦)"><input type="number" min="0" id="grill-13" class="calc-input grill-payment" tabindex="47"></td>
+                <td data-label="Net Non-Grill Received (₦)"><input type="number" readonly tabindex="-1" id="net-13" class="net-received" value="0"></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td class="total-label" data-label="Section Name">TOTAL</td>
+                <td class="total-value" data-label="MD's Bill (₦)" id="total-md">₦0</td>
+                <td class="total-value" data-label="VIP Charges (₦)" id="total-vip">₦0</td>
+                <td class="total-value" data-label="Standard Prices (₦)" id="total-standard">₦0</td>
+                <td class="total-value" data-label="Total Served (₦)" id="total-served">₦0</td>
+                <td class="total-value" data-label="Grill Cross-Payment (₦)" id="total-grill">₦0</td>
+                <td class="total-value" data-label="Net Non-Grill Received (₦)" id="total-net">₦0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Submit Section -->
+        <div class="actions-area">
+          <input type="submit" id="submit-btn" class="submit-btn" value="Submit to Ledger" tabindex="48">
+        </div>
+      </form>
+    </div>
+
+    <!-- Toast Component -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+      // Automatically default date input to today in user's local timezone
+      (function() {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        document.getElementById('date').value = `${yyyy}-${mm}-${dd}`;
+      })();
+
+      // List of section names (corresponding to row 1-13)
+      const SECTIONS = [
+        "LE PITA N/CLUB",
+        "HINDI RESTOBAR",
+        "BAR",
+        "MIXOLOGY",
+        "MAIN KITCHEN",
+        "PASTRY KITCHEN",
+        "SHISHA",
+        "ICE CREAM",
+        "CIGARETTES",
+        "SUYA ET AL",
+        "GRILLED FISH",
+        "FOIL-WRAPPED FISH",
+        "ARABIAN TEA"
+      ];
+
+      // Grab elements
+      const calcInputs = document.querySelectorAll('.calc-input');
+      const form = document.getElementById('sales-record-form');
+      const submitBtn = document.getElementById('submit-btn');
+
+      // Calculation Engine
+      function calculate() {
+        let colTotals = {
+          md: 0,
+          vip: 0,
+          standard: 0,
+          served: 0,
+          grill: 0,
+          net: 0
+        };
+
+        for (let i = 1; i <= 13; i++) {
+          const mdInput = document.getElementById(`md-${i}`);
+          const vipInput = document.getElementById(`vip-${i}`);
+          const stdInput = document.getElementById(`std-${i}`);
+          const servedInput = document.getElementById(`served-${i}`);
+          const grillInput = document.getElementById(`grill-${i}`);
+          const netInput = document.getElementById(`net-${i}`);
+
+          const mdVal = parseFloat(mdInput.value) || 0;
+          const vipVal = parseFloat(vipInput.value) || 0;
+          const stdVal = parseFloat(stdInput.value) || 0;
+
+          // Realtime Total Served = MD + VIP + Standard
+          const totalServed = mdVal + vipVal + stdVal;
+          servedInput.value = totalServed;
+
+          // Realtime Grill cross-payment (only rows 10-13)
+          let grillVal = 0;
+          if (i >= 10 && grillInput) {
+            grillVal = parseFloat(grillInput.value) || 0;
+          }
+
+          // Realtime Net Non-Grill = Total Served - Grill
+          const netReceived = totalServed - grillVal;
+          netInput.value = netReceived;
+
+          // Aggregate totals
+          colTotals.md += mdVal;
+          colTotals.vip += vipVal;
+          colTotals.standard += stdVal;
+          colTotals.served += totalServed;
+          colTotals.grill += grillVal;
+          colTotals.net += netReceived;
+        }
+
+        // Format and render footer values
+        document.getElementById('total-md').textContent = '₦' + colTotals.md.toLocaleString('en-US');
+        document.getElementById('total-vip').textContent = '₦' + colTotals.vip.toLocaleString('en-US');
+        document.getElementById('total-standard').textContent = '₦' + colTotals.standard.toLocaleString('en-US');
+        document.getElementById('total-served').textContent = '₦' + colTotals.served.toLocaleString('en-US');
+        document.getElementById('total-grill').textContent = '₦' + colTotals.grill.toLocaleString('en-US');
+        document.getElementById('total-net').textContent = '₦' + colTotals.net.toLocaleString('en-US');
+      }
+
+      // Live listener bindings
+      calcInputs.forEach(input => {
+        input.addEventListener('input', calculate);
+      });
+
+      // Toast Alerts
+      function showToast(message, isError = false) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        if (isError) {
+          toast.style.backgroundColor = '#000000';
+          toast.style.color = '#FFFFFF';
+          toast.style.borderColor = '#FF0000';
+        } else {
+          toast.style.backgroundColor = '#F5F5DC';
+          toast.style.color = '#000000';
+          toast.style.borderColor = '#000000';
+        }
+        toast.className = 'toast show';
+        
+        setTimeout(() => {
+          toast.className = 'toast';
+        }, 4000);
+      }
+
+      // Form Submission & Data Serialization
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // 1. Header Validation
+        const waitstaffName = document.getElementById('waitstaff-name').value.trim();
+        const dateVal = document.getElementById('date').value;
+        const shiftVal = document.getElementById('shift').value;
+        const supervisorId = document.getElementById('supervisor-id').value.trim();
+
+        if (!waitstaffName || !dateVal || !shiftVal || !supervisorId) {
+          showToast('ValidationError: All header fields are required.', true);
+          return;
+        }
+
+        // 2. Row Parsing & Defensive Coercion
+        const records = [];
+        
+        for (let i = 1; i <= 13; i++) {
+          const mdValStr = document.getElementById(`md-${i}`).value;
+          const vipValStr = document.getElementById(`vip-${i}`).value;
+          const stdValStr = document.getElementById(`std-${i}`).value;
+          
+          let grillValStr = "";
+          if (i >= 10) {
+            grillValStr = document.getElementById(`grill-${i}`).value;
+          }
+
+          // Row is considered dirty if any input has a user-entered value
+          const isDirty = (mdValStr !== "") || (vipValStr !== "") || (stdValStr !== "") || (grillValStr !== "");
+
+          if (isDirty) {
+            // ZERO COERCION: Explicitly coerce any blank inputs to 0
+            const mdVal = mdValStr !== "" ? parseInt(mdValStr, 10) : 0;
+            const vipVal = vipValStr !== "" ? parseInt(vipValStr, 10) : 0;
+            const stdVal = stdValStr !== "" ? parseInt(stdValStr, 10) : 0;
+            const grillVal = (i >= 10 && grillValStr !== "") ? parseInt(grillValStr, 10) : 0;
+
+            const totalServed = mdVal + vipVal + stdVal;
+            const netReceived = totalServed - grillVal;
+
+            records.push({
+              sectionName: SECTIONS[i - 1],
+              mdBill: mdVal,
+              vipCharges: vipVal,
+              standardPrice: stdVal,
+              totalServed: totalServed,
+              grillCrossPayment: grillVal,
+              netNonGrillReceived: netReceived
+            });
+          }
+        }
+
+        // 3. Bloat Validation: Verify at least one row was populated
+        if (records.length === 0) {
+          showToast('ValidationError: Enter at least one transaction row.', true);
+          return;
+        }
+
+        // 4. Construct JSON payload
+        const payload = {
+          waitstaffName: waitstaffName,
+          date: dateVal,
+          shift: shiftVal,
+          supervisorId: supervisorId,
+          submittedAt: new Date().toISOString(),
+          records: records
+        };
+
+        // Disable elements to prevent duplicate submission
+        submitBtn.value = "TRANSMITTING TO LEDGER...";
+        submitBtn.disabled = true;
+
+        // 5. Post Request
+        fetch('https://adoryike.app.n8n.cloud/webhook/97f6178c-7636-46b4-a3c8-8841d8c756fb', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Server returned status: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then(() => {
+          showToast('Success: Daily Sales Logged Successfully.');
+          
+          // Clear grid inputs
+          for (let i = 1; i <= 13; i++) {
+            document.getElementById(`md-${i}`).value = "";
+            document.getElementById(`vip-${i}`).value = "";
+            document.getElementById(`std-${i}`).value = "";
+            if (i >= 10) {
+              document.getElementById(`grill-${i}`).value = "";
+            }
+          }
+
+          // Clear Waitstaff and Shift dropdown, keep supervisor and date for continuity
+          document.getElementById('waitstaff-name').value = "";
+          document.getElementById('shift').selectedIndex = 0;
+
+          // Re-calculate totals
+          calculate();
+
+          // Reset supervisor's cursor back to Waitstaff Name
+          document.getElementById('waitstaff-name').focus();
+        })
+        .catch(error => {
+          console.error(error);
+          showToast(`Error: ${error.message || 'Submission failed.'}`, true);
+        })
+        .finally(() => {
+          submitBtn.value = "Submit to Ledger";
+          submitBtn.disabled = false;
+        });
+      });
+    </script>
+  </body>
+</html>
