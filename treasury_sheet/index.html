@@ -661,6 +661,7 @@
               <tr>
                 <th class="col-sn">S/N</th>
                 <th class="col-name">Waitstaff Name</th>
+                <th class="col-num">MD's Bill (₦)</th>
                 <th class="col-num">Total POS/Transfer (₦)</th>
                 <th class="col-num">Total Cash (₦)</th>
                 <th class="col-num">Total Remit (₦)</th>
@@ -675,6 +676,7 @@
               <tr>
                 <td class="col-sn total-label" data-label="Summary">TOTALS</td>
                 <td class="col-name" data-label="-"></td>
+                <td class="col-num" data-label="Sum MD's Bill" id="total-md">₦0</td>
                 <td class="col-num" data-label="Sum POS/Transfer" id="total-pos">₦0</td>
                 <td class="col-num" data-label="Sum Cash" id="total-cash">₦0</td>
                 <td class="col-num" data-label="Sum Remit" id="total-remit">₦0</td>
@@ -729,20 +731,23 @@
             <td class="col-name" data-label="Waitstaff Name">
               <input type="text" class="cell-input input-name" placeholder="Name" tabindex="${i * 10 + 1}" />
             </td>
+            <td class="col-num" data-label="MD's Bill (₦)">
+              <input type="number" class="cell-input input-md" min="0" placeholder="0" tabindex="${i * 10 + 2}" />
+            </td>
             <td class="col-num" data-label="Total POS/Transfer (₦)">
-              <input type="number" class="cell-input input-pos" min="0" placeholder="0" tabindex="${i * 10 + 2}" />
+              <input type="number" class="cell-input input-pos" min="0" placeholder="0" tabindex="${i * 10 + 3}" />
             </td>
             <td class="col-num" data-label="Total Cash (₦)">
-              <input type="number" class="cell-input input-cash" min="0" placeholder="0" tabindex="${i * 10 + 3}" />
+              <input type="number" class="cell-input input-cash" min="0" placeholder="0" tabindex="${i * 10 + 4}" />
             </td>
             <td class="col-num" data-label="Total Remit (₦)">
               <input type="number" class="cell-input input-remit" placeholder="0" readonly tabindex="-1" />
             </td>
             <td class="col-num" data-label="Settled Receipts (₦)">
-              <input type="number" class="cell-input input-settled" min="0" placeholder="0" tabindex="${i * 10 + 4}" />
+              <input type="number" class="cell-input input-settled" min="0" placeholder="0" tabindex="${i * 10 + 5}" />
             </td>
             <td class="col-term" data-label="POS Terminals Returned">
-              <input type="text" class="cell-input input-terminals" placeholder="Terminal #" tabindex="${i * 10 + 5}" />
+              <input type="text" class="cell-input input-terminals" placeholder="Terminal #" tabindex="${i * 10 + 6}" />
             </td>
           `;
           tableBody.appendChild(row);
@@ -767,7 +772,7 @@
             const row = target.closest('.grid-row');
             calculateRowRemit(row);
             calculateColumnTotals();
-          } else if (target.classList.contains('input-settled')) {
+          } else if (target.classList.contains('input-settled') || target.classList.contains('input-md')) {
             calculateColumnTotals();
           }
         });
@@ -788,6 +793,7 @@
           let totalCash = 0;
           let totalRemit = 0;
           let totalSettled = 0;
+          let totalMD = 0;
 
           const rows = tableBody.querySelectorAll('.grid-row');
           rows.forEach(row => {
@@ -795,13 +801,16 @@
             const cash = parseFloat(row.querySelector('.input-cash').value) || 0;
             const remit = pos + cash;
             const settled = parseFloat(row.querySelector('.input-settled').value) || 0;
+            const md = parseFloat(row.querySelector('.input-md').value) || 0;
 
             totalPOS += pos;
             totalCash += cash;
             totalRemit += remit;
             totalSettled += settled;
+            totalMD += md;
           });
 
+          document.getElementById('total-md').textContent = '₦' + totalMD.toLocaleString('en-US');
           document.getElementById('total-pos').textContent = '₦' + totalPOS.toLocaleString('en-US');
           document.getElementById('total-cash').textContent = '₦' + totalCash.toLocaleString('en-US');
           document.getElementById('total-remit').textContent = '₦' + totalRemit.toLocaleString('en-US');
@@ -844,6 +853,7 @@
           const rows = tableBody.querySelectorAll('.grid-row');
           rows.forEach(row => {
             row.querySelector('.input-name').value = '';
+            row.querySelector('.input-md').value = '';
             row.querySelector('.input-pos').value = '';
             row.querySelector('.input-cash').value = '';
             row.querySelector('.input-remit').value = '';
@@ -882,6 +892,7 @@
           rows.forEach(row => {
             const sn = parseInt(row.getAttribute('data-row'), 10);
             const nameInput = row.querySelector('.input-name').value.trim();
+            const mdInputRaw = row.querySelector('.input-md').value;
             const posInputRaw = row.querySelector('.input-pos').value;
             const cashInputRaw = row.querySelector('.input-cash').value;
             const settledInputRaw = row.querySelector('.input-settled').value;
@@ -889,14 +900,16 @@
 
             // A row is considered "entered" if Waitstaff Name is populated, OR any financial cells are non-empty/non-zero
             const hasName = nameInput !== '';
+            const hasMD = mdInputRaw !== '' && parseFloat(mdInputRaw) !== 0;
             const hasPOS = posInputRaw !== '' && parseFloat(posInputRaw) !== 0;
             const hasCash = cashInputRaw !== '' && parseFloat(cashInputRaw) !== 0;
             const hasSettled = settledInputRaw !== '' && parseFloat(settledInputRaw) !== 0;
             const hasTerminals = terminalsInputRaw !== '';
 
-            if (hasName || hasPOS || hasCash || hasSettled || hasTerminals) {
+            if (hasName || hasMD || hasPOS || hasCash || hasSettled || hasTerminals) {
               // Apply Defensive Coercion:
               // Blank numeric cells convert to integer 0
+              const mdBill = mdInputRaw === '' ? 0 : parseFloat(mdInputRaw);
               const totalPOS = posInputRaw === '' ? 0 : parseFloat(posInputRaw);
               const totalCash = cashInputRaw === '' ? 0 : parseFloat(cashInputRaw);
               const totalSettledReceipts = settledInputRaw === '' ? 0 : parseFloat(settledInputRaw);
@@ -908,6 +921,7 @@
               submittedRows.push({
                 sn: sn,
                 waitstaffName: nameInput || "Unspecified",
+                mdBill: mdBill,
                 totalPOS: totalPOS,
                 totalCash: totalCash,
                 totalRemit: totalRemit,
